@@ -17,6 +17,7 @@
 #include "uart.h"
 #include "console.h"
 #include "ciface.h"
+#include "lib.h"
 
 #define CR 0x0D
 #define LF 0x0A
@@ -75,6 +76,20 @@ void sendstr(const unsigned char * str) {
 		else break;
 		str++;
 	}
+}
+
+void sendcrlf(void) {
+	sendstr_P(PSTR("\r\n"));
+}
+
+void luint2outdual(unsigned long int val) {
+	unsigned char buf[11];
+	luint2str(buf,val);
+	sendstr(buf);
+	sendstr_P(PSTR(" ("));
+	luint2xstr(buf,val);
+	sendstr(buf);
+	sendstr_P(PSTR("h) "));
 }
 
 unsigned char* scanfor_notspace(unsigned char *buf) {

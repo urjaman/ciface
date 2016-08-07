@@ -17,10 +17,7 @@
 #include "console.h"
 #include "lib.h"
 #include "ciface.h"
-
-static void sendcrlf(void) {
-	sendstr_P(PSTR("\r\n"));
-}
+#include "appdb.h"
 
 CIFACE_APP(echo_cmd, "ECHO")
 {
@@ -64,16 +61,6 @@ unsigned long int calc_opdo(unsigned long int val1, unsigned long int val2, unsi
 			break;
 	}
 	return val1;
-}
-
-void luint2outdual(unsigned long int val) {
-	unsigned char buf[11];
-	luint2str(buf,val);
-	sendstr(buf);
-	sendstr_P(PSTR(" ("));
-	luint2xstr(buf,val);
-	sendstr(buf);
-	sendstr_P(PSTR("h) "));
 }
 
 unsigned long int closureparser(unsigned char firsttok, unsigned char*ptr) {

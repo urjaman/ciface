@@ -1,0 +1,5 @@
+This is some smallish serial cli code i've dragged from project to project since 2009 or so
+with no clear master version - finally a repo just for this...
+
+You're free to use it (GPLv2, see COPYING) but be warned that it is not very clean or anything,
+basically just one big hack :P

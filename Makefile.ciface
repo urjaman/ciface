@@ -1,0 +1,12 @@
+# Because we define a target for the db autogeneration, you should include this after your all: target.
+# Extensibility of commands is via the CMD_SOURCES variable to point at more files to include in the appdb parsing.
+
+CIP := ciface
+CFLAGS += -I$(CIP)
+DEPS += $(CIP)/ciface.h $(CIP)/appdb.h $(CIP)/console.h $(CIP)/lib.h $(CIP)/Makefile.ciface $(CIP)/appdb_db.c
+SOURCES += $(CIP)/appdb.c $(CIP)/ciface.c $(CIP)/console.c $(CIP)/commands.c $(CIP)/lib.c
+CMD_SOURCES += $(CIP)/commands.c
+
+$(CIP)/appdb_db.c: $(CIP)/make_appdb.sh $(CMD_SOURCES)
+	$(CIP)/make_appdb.sh $(CMD_SOURCES) > $(CIP)/appdb_db.c
+

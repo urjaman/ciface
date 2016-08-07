@@ -13,6 +13,7 @@
  */
 
 #include "main.h"
+#include "uart.h"
 #include "ciface.h"
 #include "console.h"
 #include "appdb.h"
