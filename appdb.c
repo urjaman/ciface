@@ -34,7 +34,7 @@ static void help_cmd(void) {
 	PGM_P name;
 	for(i=0;;i++) {
 		ctptr = &(appdb[i]);
-		name = (PGM_P)pgm_read_word(&(ctptr->name));
+		name = (PGM_P)pgm_read_ptr(&(ctptr->name));
 		if (!name) break;
 		sendstr_P(name);
 		SEND(' ');
@@ -48,8 +48,8 @@ void *find_appdb(unsigned char* cmd) {
 	void* fp;
 	for(i=0;;i++) {
 		ctptr = &(appdb[i]);
-		name = (PGM_P)pgm_read_word(&(ctptr->name));
-		fp = (void*)pgm_read_word(&(ctptr->function));
+		name = (PGM_P)pgm_read_ptr(&(ctptr->name));
+		fp = (void*)pgm_read_ptr(&(ctptr->function));
 		if (!name) break;
 		if (strcmp_P((char*)cmd,name) == 0) {
 			return fp;

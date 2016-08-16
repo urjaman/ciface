@@ -15,7 +15,8 @@
 #include "main.h"
 #include "lib.h"
 
-/*void luint2str(unsigned char *buf, unsigned long int val) {
+#ifndef __AVR__
+void luint2str(unsigned char *buf, unsigned long int val) {
 	unsigned long int divisor;
 	unsigned char flag;
 	unsigned char mark;
@@ -30,12 +31,12 @@
 	*buf = mark;
 	buf++;
 	*buf = 0;
-}*/
-
+}
+#else
 void luint2str(unsigned char *buf, unsigned long int val) {
 	ultoa(val,(char*)buf,10);
 }
-
+#endif
 
 void uint2str(unsigned char *buf, unsigned int val) {
 	luint2str(buf,(unsigned long int)val);
@@ -121,8 +122,8 @@ unsigned char xstr2uchar(unsigned char *buf) {
 
 
 
-
-/*void luint2xstr(unsigned char*buf, unsigned long int val) {
+#ifndef __AVR__
+void luint2xstr(unsigned char*buf, unsigned long int val) {
 	unsigned char flag=0;
 	unsigned char mark;
 	unsigned char shift;
@@ -136,12 +137,13 @@ unsigned char xstr2uchar(unsigned char *buf) {
 	*buf = hextab_func((val&0x0F));
 	buf++;
 	*buf = 0;
-}*/
-
+}
+#else
 void luint2xstr(unsigned char *buf, unsigned long int val) {
 	ultoa(val,(char*)buf,16);
 	strupr((char*)buf); // i dont like "aaaah"...
 }
+#endif
 
 void uint2xstr(unsigned char *buf,unsigned int val) {
 	luint2xstr(buf,(unsigned long int)val);
