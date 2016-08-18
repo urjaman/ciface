@@ -24,7 +24,7 @@ CIFACE_APP(echo_cmd, "ECHO")
 	unsigned char i;
 	for (i=1;i<token_count;i++) {
 		sendstr(tokenptrs[i]);
-		SEND(' ');
+		ciface_send(' ');
 	}
 }
 
@@ -115,7 +115,7 @@ CIFACE_APP(calc_cmd, "CALC")
 	for (;i<token_count;i++) {
 		if (n&1) {
 			sendstr(op);
-			SEND(' ');
+			ciface_send(' ');
 			if (*(tokenptrs[i]) == '(') {
 				val2 = closureparser((i+1),&i);
 			} else {

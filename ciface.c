@@ -19,23 +19,26 @@
 #include "lib.h"
 #include "ciface.h"
 
-#define RECVBUFLEN 64
 
 const unsigned char prompt[] PROGMEM = "\x0D\x0A> ";
-unsigned char recvbuf[RECVBUFLEN];
-unsigned char token_count;
-unsigned char* tokenptrs[MAXTOKENS] __attribute__((aligned(16)));
-
+struct ciface_info ciface_mi;
+#ifdef MULTI_CIFACE
+struct ciface_info *ciface_ip;
+#endif
 
 void ciface_main(void) {
 	void(*func)(void);
 	for (;;) {
 		sendstr_P((PGM_P)prompt);
-		if (getline(recvbuf,RECVBUFLEN)) return;
-		tokenize(recvbuf,tokenptrs, &token_count);
+		if (getline(ciface_recvbuf,RECVBUFLEN)) return;
+		tokenize(ciface_recvbuf,tokenptrs, &token_count);
 		if (token_count) {
 			func = find_appdb(tokenptrs[0]);
 			func();
 		}
 	}
 }
+
+#ifndef MULTI_CIFACE 
+void ciface_yield(void) { }
+#endif

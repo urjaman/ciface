@@ -36,22 +36,22 @@ uint8_t getline(unsigned char *buf, unsigned char len) {
 	unsigned char val,i;
 	memset(buf,0,len);
 	for(i=0;i<len;i++) {
-#ifdef PEEK
-		val = PEEK();
+#ifdef ciface_peek
+		val = ciface_peek();
 #else
-		val = RECEIVE();
+		val = ciface_recv();
 #endif
 		if ((val==NOP)||(val==IFACE)||
 			(val==SYNCNOP)) return 1; // EXIT
-#ifdef PEEK
-		val = RECEIVE();
+#ifdef ciface_peek
+		val = ciface_recv();
 #endif
-		if (((val == BS)||(val == DEL))&&(i)) { SEND(BS); SEND(SPACE); SEND(BS); i = i-2; continue; }; // Understand BS or DEL
-		if (val == CR) { SEND(CR); SEND(LF); buf[i] = 0; break; }; // Understand LF
+		if (((val == BS)||(val == DEL))&&(i)) { ciface_send(BS); ciface_send(SPACE); ciface_send(BS); i = i-2; continue; }; // Understand BS or DEL
+		if (val == CR) { ciface_send(CR); ciface_send(LF); buf[i] = 0; break; }; // Understand LF
 		if ((val < 32)||(val == DEL)) { i--; continue; };
-		if (val == 255) { RECEIVE(); RECEIVE(); i--; continue; }; // Filter TELNET options
+		if (val == 255) { ciface_recv(); ciface_recv(); i--; continue; }; // Filter TELNET options
 		buf[i] = val;
-		SEND(val);
+		ciface_send(val);
 	}
 	buf[len-1] = 0;
 	return 0;
@@ -62,7 +62,7 @@ void sendstr_P(PGM_P str) {
 	unsigned char val;
 	for(;;) {
 		val = pgm_read_byte(str);
-		if (val) SEND(val);
+		if (val) ciface_send(val);
 		else break;
 		str++;
 	}
@@ -72,7 +72,7 @@ void sendstr(const unsigned char * str) {
 	unsigned char val;
 	for(;;) {
 		val = *str;
-		if (val) SEND(val);
+		if (val) ciface_send(val);
 		else break;
 		str++;
 	}
