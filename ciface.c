@@ -40,5 +40,5 @@ void ciface_main(void) {
 }
 
 #ifndef MULTI_CIFACE 
-void ciface_yield(void) { }
+void ciface_yield(void) { }
 #endif
