@@ -37,7 +37,7 @@ static void help_cmd(void) {
 		name = (PGM_P)pgm_read_ptr(&(ctptr->name));
 		if (!name) break;
 		sendstr_P(name);
-		SEND(' ');
+		ciface_send(' ');
 	}
 }
 
