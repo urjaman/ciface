@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2013 Urja Rannikko <urjaman@gmail.com>
+ * Copyright (C) 2013,2016 Urja Rannikko <urjaman@gmail.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,63 +15,10 @@
 #include "main.h"
 #include "lib.h"
 
-#ifndef __AVR__
-void luint2str(unsigned char *buf, unsigned long int val) {
-	unsigned long int divisor;
-	unsigned char flag;
-	unsigned char mark;
-	flag=0;
-
-	for(divisor=1000000000;divisor>1;divisor/=10) {
-		mark = ((val / divisor) | 0x30);
-		val = (val % divisor);
-		if ((mark != 0x30)||(flag)) {*buf = mark; flag=1; buf++; };
-	}
-	mark = (val | 0x30);
-	*buf = mark;
-	buf++;
-	*buf = 0;
-}
-#else
-void luint2str(unsigned char *buf, unsigned long int val) {
-	ultoa(val,(char*)buf,10);
-}
-#endif
-
-void uint2str(unsigned char *buf, unsigned int val) {
-	luint2str(buf,(unsigned long int)val);
-}
-
-
-void uchar2str(unsigned char *buf, unsigned char val) {
-	uint2str(buf,(unsigned int)val);
-}
-
 static unsigned char hextab_func(unsigned char offset) {
 	offset |= 0x30;
 	if (offset > 0x39) offset += 7;
 	return offset;
-}
-
-void uchar2xstr(unsigned char *buf,unsigned char val) {
-	unsigned char offset;
-	offset = ((val>>4)&0x0F);
-	buf[0] = hextab_func(offset);
-	offset = (val&0x0F);
-	buf[1] = hextab_func(offset);
-	buf[2] = 0;
-}
-
-unsigned char str2uchar(unsigned char *buf) {
-	unsigned char rv;
-	for (rv=0;*buf;buf++) {
-		if ((*buf >= '0')||(*buf <= '9')) {
-			rv *= 10;
-			rv = rv + (*buf &0x0F);
-
-		}
-	}
-	return rv;
 }
 
 static unsigned char reverse_hextab(unsigned char hexchar) {
@@ -90,40 +37,94 @@ static unsigned char isvalid(unsigned char c, unsigned char base) {
 	return 1;
 }
 
-unsigned long int astr2luint(unsigned char *buf) {
-	unsigned char i;
-	unsigned char len;
-	unsigned char base=10;
-	unsigned long int rv;
-	strupr((char*)buf);
-	len = strlen((char*)buf);
-	if (buf[len-1] == 'H') base=16;
-
-	rv = 0;
-	for(i=0;i<len;i++) {
-		if (!(isvalid(buf[i],base))) continue;
-		rv = rv * base;
-		rv += reverse_hextab(buf[i]); // RV HEXTAB works also for base 10
+uint8_t str2uchar(unsigned char *buf) {
+	uint8_t rv;
+	for (rv=0;*buf;buf++) {
+		if ((*buf >= '0')||(*buf <= '9')) {
+			rv *= 10;
+			rv = rv + (*buf &0x0F);
+		}
 	}
-	if (buf[0] == '~') rv = ~rv;
 	return rv;
 }
 
-
-
-
-unsigned char xstr2uchar(unsigned char *buf) {
-	unsigned char rv;
+uint8_t xstr2uchar(unsigned char *buf) {
+	uint8_t rv;
 	rv = (reverse_hextab(*buf)<<4);
 	buf++;
 	rv |= reverse_hextab(*buf);
 	return rv;
 }
 
+uint32_t astr2luint(unsigned char *buf) {
+	uint8_t i, len, base=10;
+	uint32_t rv;
+	strupr((char*)buf);
+	len = strlen((char*)buf);
+	if (buf[len-1] == 'H') base=16;
+	if ((buf[0] == '0')&&(buf[1] == 'X')) base=16;
+	if ((buf[0] == '~')&&(buf[1] == '0')&&(buf[2] == 'X')) base=16;
+	rv = 0;
+	for(i=0;i<len;i++) {
+		if (!(isvalid(buf[i],base))) continue;
+		rv = rv * base;
+		rv += reverse_hextab(buf[i]); // RVHEXTAB works also for base 10
+	}
+	if (buf[0] == '~') rv = ~rv;
+	return rv;
+}
 
+uint8_t uint2str(unsigned char *buf, uint16_t val) {
+	return luint2str(buf,(uint32_t)val);
+}
+
+uint8_t uint2xstr(unsigned char *buf,uint16_t val) {
+	return luint2xstr(buf,(uint32_t)val);
+}
+
+uint8_t uchar2str(unsigned char *buf, uint8_t val) {
+	return uint2str(buf,(uint16_t)val);
+}
+
+uint8_t uchar2xstr(unsigned char *buf,uint8_t val) {
+	unsigned char offset;
+	offset = ((val>>4)&0x0F);
+	buf[0] = hextab_func(offset);
+	offset = (val&0x0F);
+	buf[1] = hextab_func(offset);
+	buf[2] = 0;
+	return 2;
+}
+
+#ifndef __AVR__
+uint8_t luint2str(unsigned char *buf, uint32_t val) {
+	unsigned char *bi = buf;
+	unsigned long int divisor;
+	unsigned char flag;
+	unsigned char mark;
+	flag=0;
+
+	for(divisor=1000000000;divisor>1;divisor/=10) {
+		mark = ((val / divisor) | 0x30);
+		val = (val % divisor);
+		if ((mark != 0x30)||(flag)) {*buf = mark; flag=1; buf++; };
+	}
+	mark = (val | 0x30);
+	*buf = mark;
+	buf++;
+	*buf = 0;
+	return buf - bi;
+}
+#else
+uint8_t luint2str(unsigned char *buf, uint32_t val) {
+	ultoa(val,(char*)buf,10);
+	return strlen((char*)buf);
+}
+#endif
 
 #ifndef __AVR__
 void luint2xstr(unsigned char*buf, unsigned long int val) {
+	unsigned char *bi = buf;
 	unsigned char flag=0;
 	unsigned char mark;
 	unsigned char shift;
@@ -137,17 +138,15 @@ void luint2xstr(unsigned char*buf, unsigned long int val) {
 	*buf = hextab_func((val&0x0F));
 	buf++;
 	*buf = 0;
+	return buf - bi;
 }
 #else
-void luint2xstr(unsigned char *buf, unsigned long int val) {
+uint8_t luint2xstr(unsigned char *buf, uint32_t val) {
 	ultoa(val,(char*)buf,16);
 	strupr((char*)buf); // i dont like "aaaah"...
+	return strlen((char*)buf);
 }
 #endif
-
-void uint2xstr(unsigned char *buf,unsigned int val) {
-	luint2xstr(buf,(unsigned long int)val);
-}
 
 unsigned char bcd2bin(unsigned char bcd) {
         return ((bcd>>4)*10)+(bcd&0x0F);
