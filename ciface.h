@@ -1,3 +1,5 @@
+#pragma once
+
 void ciface_main(void);
 
 #define MAXTOKENS 16

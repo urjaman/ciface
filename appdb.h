@@ -1,3 +1,5 @@
+#pragma once
+
 struct command_t {
 	PGM_P name;
 	void(*function)(void);

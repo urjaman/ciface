@@ -1,3 +1,5 @@
+#pragma once
+
 uint8_t getline(unsigned char *buf, unsigned char len);
 void sendstr_P(PGM_P str);
 void sendstr(const unsigned char * str);
