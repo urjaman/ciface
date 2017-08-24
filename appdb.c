@@ -23,16 +23,18 @@ static void help_cmd(void);
 
 #include "appdb_db.c"
 
-static void invalid_command(void) {
+static void invalid_command(void)
+{
 	sendstr(tokenptrs[0]);
 	sendstr_P(PSTR(": not found"));
 }
 
-static void help_cmd(void) {
+static void help_cmd(void)
+{
 	unsigned char i;
 	const struct command_t * ctptr;
 	PGM_P name;
-	for(i=0;;i++) {
+	for(i=0;; i++) {
 		ctptr = &(appdb[i]);
 		name = (PGM_P)pgm_read_ptr(&(ctptr->name));
 		if (!name) break;
@@ -41,19 +43,20 @@ static void help_cmd(void) {
 	}
 }
 
-void *find_appdb(unsigned char* cmd) {
+void *find_appdb(unsigned char* cmd)
+{
 	unsigned char i;
 	const struct command_t * ctptr;
 	PGM_P name;
 	void* fp;
-	for(i=0;;i++) {
+	for(i=0;; i++) {
 		ctptr = &(appdb[i]);
 		name = (PGM_P)pgm_read_ptr(&(ctptr->name));
 		fp = (void*)pgm_read_ptr(&(ctptr->function));
 		if (!name) break;
 		if (strcmp_P((char*)cmd,name) == 0) {
 			return fp;
-			}
+		}
 	}
 	return &(invalid_command);
 }

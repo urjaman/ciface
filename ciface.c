@@ -26,7 +26,8 @@ struct ciface_info ciface_mi;
 struct ciface_info *ciface_ip;
 #endif
 
-void ciface_main(void) {
+void ciface_main(void)
+{
 	void(*func)(void);
 	for (;;) {
 		sendstr_P((PGM_P)prompt);
@@ -39,6 +40,6 @@ void ciface_main(void) {
 	}
 }
 
-#ifndef MULTI_CIFACE 
+#ifndef MULTI_CIFACE
 void ciface_yield(void) { }
 #endif

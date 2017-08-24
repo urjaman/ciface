@@ -32,17 +32,18 @@
 #define SYNCNOP 0x10
 
 
-uint8_t getline(unsigned char *buf, unsigned char len) {
+uint8_t getline(unsigned char *buf, unsigned char len)
+{
 	unsigned char val,i;
 	memset(buf,0,len);
-	for(i=0;i<len;i++) {
+	for(i=0; i<len; i++) {
 #ifdef ciface_peek
 		val = ciface_peek();
 #else
 		val = ciface_recv();
 #endif
 		if ((val==NOP)||(val==IFACE)||
-			(val==SYNCNOP)) return 1; // EXIT
+		    (val==SYNCNOP)) return 1; // EXIT
 #ifdef ciface_peek
 		val = ciface_recv();
 #endif
@@ -58,7 +59,8 @@ uint8_t getline(unsigned char *buf, unsigned char len) {
 }
 
 
-void sendstr_P(PGM_P str) {
+void sendstr_P(PGM_P str)
+{
 	unsigned char val;
 	for(;;) {
 		val = pgm_read_byte(str);
@@ -68,7 +70,8 @@ void sendstr_P(PGM_P str) {
 	}
 }
 
-void sendstr(const unsigned char * str) {
+void sendstr(const unsigned char * str)
+{
 	unsigned char val;
 	for(;;) {
 		val = *str;
@@ -78,11 +81,13 @@ void sendstr(const unsigned char * str) {
 	}
 }
 
-void sendcrlf(void) {
+void sendcrlf(void)
+{
 	sendstr_P(PSTR("\r\n"));
 }
 
-void luint2outdual(unsigned long int val) {
+void luint2outdual(unsigned long int val)
+{
 	unsigned char buf[11];
 	luint2str(buf,val);
 	sendstr(buf);
@@ -92,7 +97,8 @@ void luint2outdual(unsigned long int val) {
 	sendstr_P(PSTR("h) "));
 }
 
-unsigned char* scanfor_notspace(unsigned char *buf) {
+unsigned char* scanfor_notspace(unsigned char *buf)
+{
 	for (;;) {
 		if (!(*buf)) return buf;
 		if (!isspace(*buf)) return buf;
@@ -100,7 +106,8 @@ unsigned char* scanfor_notspace(unsigned char *buf) {
 	}
 }
 
-unsigned char* scanfor_space(unsigned char *buf) {
+unsigned char* scanfor_space(unsigned char *buf)
+{
 	for (;;) {
 		if (!(*buf)) return buf;
 		if (isspace(*buf)) return buf;
@@ -108,7 +115,8 @@ unsigned char* scanfor_space(unsigned char *buf) {
 	}
 }
 
-static unsigned char count_tokens(unsigned char *rcvbuf) {
+static unsigned char count_tokens(unsigned char *rcvbuf)
+{
 	unsigned char tokens=0;
 	for (;;) {
 		rcvbuf = scanfor_notspace(rcvbuf);
@@ -120,7 +128,8 @@ static unsigned char count_tokens(unsigned char *rcvbuf) {
 	return tokens;
 }
 
-void tokenize(unsigned char *rcvbuf,unsigned char** ptrs, unsigned char* tkcntptr) {
+void tokenize(unsigned char *rcvbuf,unsigned char** ptrs, unsigned char* tkcntptr)
+{
 	unsigned char i;
 	unsigned char tokens;
 
@@ -128,7 +137,7 @@ void tokenize(unsigned char *rcvbuf,unsigned char** ptrs, unsigned char* tkcntpt
 	if (tokens > MAXTOKENS) tokens = MAXTOKENS;
 	if (tkcntptr) *tkcntptr = tokens;
 
-	for (i=0;i<tokens;i++) {
+	for (i=0; i<tokens; i++) {
 		rcvbuf = scanfor_notspace(rcvbuf);
 		if (!(*rcvbuf)) break;
 		ptrs[i] = rcvbuf;

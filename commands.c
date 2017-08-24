@@ -22,13 +22,14 @@
 CIFACE_APP(echo_cmd, "ECHO")
 {
 	unsigned char i;
-	for (i=1;i<token_count;i++) {
+	for (i=1; i<token_count; i++) {
 		sendstr(tokenptrs[i]);
 		ciface_send(' ');
 	}
 }
 
-static unsigned long int calc_opdo(unsigned long int val1, unsigned long int val2, unsigned char *op) {
+static unsigned long int calc_opdo(unsigned long int val1, unsigned long int val2, unsigned char *op)
+{
 	switch (*op) {
 		case '+':
 			val1 += val2;
@@ -63,7 +64,8 @@ static unsigned long int calc_opdo(unsigned long int val1, unsigned long int val
 	return val1;
 }
 
-static unsigned long int closureparser(unsigned char firsttok, unsigned char*ptr) {
+static unsigned long int closureparser(unsigned char firsttok, unsigned char*ptr)
+{
 	unsigned char *op=NULL;
 	unsigned char i,n;
 	unsigned long int val1, val2;
@@ -72,7 +74,7 @@ static unsigned long int closureparser(unsigned char firsttok, unsigned char*ptr
 	sendstr_P(PSTR("{ "));
 	luint2outdual(val1);
 	n=0;
-	for(i=firsttok+1;i<token_count;i++) {
+	for(i=firsttok+1; i<token_count; i++) {
 		if (n&1) {
 			sendstr(op);
 			SEND(' ');
@@ -112,7 +114,7 @@ CIFACE_APP(calc_cmd, "CALC")
 		i=2;
 	}
 	n=0;
-	for (;i<token_count;i++) {
+	for (; i<token_count; i++) {
 		if (n&1) {
 			sendstr(op);
 			ciface_send(' ');
