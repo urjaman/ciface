@@ -59,6 +59,29 @@ uint8_t getline(unsigned char *buf, unsigned char len)
 }
 
 
+uint8_t getline_mc(unsigned char *buf, unsigned char len)
+{
+	unsigned char val,i;
+	for(i=getline_i; i<len; i++) {
+		if (ciface_isdata()) {
+			val = ciface_recv();
+			if (((val == BS)||(val == DEL))&&(i)) { ciface_send(BS); ciface_send(SPACE); ciface_send(BS); i = i-2; continue; }; // Understand BS or DEL
+			if (val == CR) { ciface_send(CR); ciface_send(LF); buf[i] = 0; break; }; // Understand LF
+			if ((val < 32)||(val == DEL)) { i--; continue; };
+			if (val == 255) { ciface_recv(); ciface_recv(); i--; continue; }; // Filter TELNET options
+			buf[i] = val;
+			ciface_send(val);
+		} else {
+			getline_i = i;
+			return 0;
+		}
+	}
+	buf[len-1] = 0;
+	getline_i = 0;
+	return 1;
+}
+
+
 void sendstr_P(PGM_P str)
 {
 	unsigned char val;
@@ -128,14 +151,13 @@ static unsigned char count_tokens(unsigned char *rcvbuf)
 	return tokens;
 }
 
-void tokenize(unsigned char *rcvbuf,unsigned char** ptrs, unsigned char* tkcntptr)
+uint8_t tokenize(unsigned char *rcvbuf,unsigned char** ptrs)
 {
 	unsigned char i;
 	unsigned char tokens;
 
 	tokens = count_tokens(rcvbuf);
 	if (tokens > MAXTOKENS) tokens = MAXTOKENS;
-	if (tkcntptr) *tkcntptr = tokens;
 
 	for (i=0; i<tokens; i++) {
 		rcvbuf = scanfor_notspace(rcvbuf);
@@ -144,6 +166,7 @@ void tokenize(unsigned char *rcvbuf,unsigned char** ptrs, unsigned char* tkcntpt
 		rcvbuf = scanfor_space(rcvbuf);
 		if (*rcvbuf) { *rcvbuf = 0; rcvbuf++; };
 	}
+
 	if (ptrs[0]) strupr((char*)ptrs[0]);
-	return;
+	return tokens;
 }

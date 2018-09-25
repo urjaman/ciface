@@ -28,17 +28,35 @@ struct ciface_info *ciface_ip;
 
 void ciface_main(void)
 {
-	void(*func)(void);
 	for (;;) {
 		sendstr_P((PGM_P)prompt);
 		if (getline(ciface_recvbuf,RECVBUFLEN)) return;
-		tokenize(ciface_recvbuf,tokenptrs, &token_count);
+		token_count = tokenize(ciface_recvbuf,tokenptrs);
 		if (token_count) {
+			void(*func)(void);
 			func = find_appdb(tokenptrs[0]);
 			func();
 		}
 	}
 }
+
+void ciface_init(void) {
+	sendstr_P((PGM_P)prompt);
+	getline_i = 0;
+}
+
+void ciface_run(void) {
+	if (getline_mc(ciface_recvbuf, RECVBUFLEN)) {
+		token_count = tokenize(ciface_recvbuf,tokenptrs);
+		if (token_count) {
+			void(*func)(void);
+			func = find_appdb(tokenptrs[0]);
+			func();
+		}
+		sendstr_P((PGM_P)prompt);
+	}
+}
+
 
 #ifndef MULTI_CIFACE
 void ciface_yield(void) { }
