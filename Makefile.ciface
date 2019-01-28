@@ -4,8 +4,7 @@
 CIP := ciface
 CFLAGS += -I$(CIP)
 DEPS += $(CIP)/ciface.h $(CIP)/appdb.h $(CIP)/console.h $(CIP)/lib.h $(CIP)/Makefile.ciface $(CIP)/appdb_db.c
-SOURCES += $(CIP)/appdb.c $(CIP)/ciface.c $(CIP)/console.c $(CIP)/commands.c $(CIP)/lib.c
-CMD_SOURCES += $(CIP)/commands.c
+SOURCES += $(CIP)/appdb.c $(CIP)/ciface.c $(CIP)/console.c $(CIP)/lib.c
 
 $(CIP)/appdb_db.c: $(CIP)/make_appdb.sh $(CMD_SOURCES)
 	$(CIP)/make_appdb.sh $(CMD_SOURCES) > $(CIP)/appdb_db.c

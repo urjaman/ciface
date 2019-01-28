@@ -19,15 +19,6 @@
 #include "ciface.h"
 #include "appdb.h"
 
-CIFACE_APP(echo_cmd, "ECHO")
-{
-	unsigned char i;
-	for (i=1; i<token_count; i++) {
-		sendstr(tokenptrs[i]);
-		ciface_send(' ');
-	}
-}
-
 static unsigned long int calc_opdo(unsigned long int val1, unsigned long int val2, unsigned char *op)
 {
 	switch (*op) {
