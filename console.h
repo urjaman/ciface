@@ -13,3 +13,4 @@ unsigned char* scanfor_space(unsigned char *buf);
 uint8_t tokenize(unsigned char *rcvbuf,unsigned char** ptrs);
 void sendcrlf(void);
 void luint2outdual(unsigned long int val);
+void u32outdec(unsigned long int val);

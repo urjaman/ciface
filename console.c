@@ -109,15 +109,22 @@ void sendcrlf(void)
 	sendstr_P(PSTR("\r\n"));
 }
 
+void u32outdec(unsigned long int val)
+{
+	unsigned char buf[11];
+	luint2str(buf,val);
+	sendstr(buf);
+}
+
 void luint2outdual(unsigned long int val)
 {
 	unsigned char buf[11];
 	luint2str(buf,val);
 	sendstr(buf);
-	sendstr_P(PSTR(" ("));
+	sendstr_P(PSTR(" (0x"));
 	luint2xstr(buf,val);
 	sendstr(buf);
-	sendstr_P(PSTR("h) "));
+	sendstr_P(PSTR(") "));
 }
 
 unsigned char* scanfor_notspace(unsigned char *buf)
