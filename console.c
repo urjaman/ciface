@@ -177,7 +177,7 @@ uint8_t getline_mc(unsigned char *buf, unsigned char len)
 }
 
 
-void sendstr_P(PGM_P str)
+PGM_P sendstr_P(PGM_P str)
 {
 	unsigned char val;
 	for(;;) {
@@ -186,9 +186,10 @@ void sendstr_P(PGM_P str)
 		else break;
 		str++;
 	}
+	return str;
 }
 
-void sendstr(const unsigned char * str)
+const unsigned char* sendstr(const unsigned char * str)
 {
 	unsigned char val;
 	for(;;) {
@@ -197,6 +198,7 @@ void sendstr(const unsigned char * str)
 		else break;
 		str++;
 	}
+	return str;
 }
 
 void sendcrlf(void)
